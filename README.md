@@ -298,14 +298,3 @@ Freshify is an educational and experimental AI application developed for academi
 
 ---
 
-## 👩‍💻 Author
-
-**Rucha Patil**
-
-M.Tech Artificial Intelligence and Machine Learning
-
----
-
-## 📜 License
-
-This project is intended for educational and academic purposes.
