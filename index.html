@@ -1,1 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Freshify | Fruit Freshness</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(
+                135deg,
+                #fff5f8 0%,
+                #fffafd 50%,
+                #fdf2f8 100%
+            );
+            color: #79566a;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        .brand {
+            text-align: center;
+            color: #d63384;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 17px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 22px;
+            border: 1px solid #f8d7e5;
+            box-shadow: 0 5px 20px rgba(214, 51, 132, 0.08);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #d63384;
+            text-align: center;
+        }
+
+        .welcome {
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .upload-area {
+            border: 2px dashed #f3a6c8;
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+            background: #fff7fb;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #f3a6c8;
+            background: white;
+        }
+
+        .preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 18px;
+            margin-top: 20px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(
+                90deg,
+                #d63384,
+                #ec4899
+            );
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 18px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .fresh {
+            background: #ecfdf3;
+            border: 1px solid #a7f3d0;
+            color: #166534;
+        }
+
+        .rotten {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+        }
+
+        .scores {
+            display: flex;
+            gap: 20px;
+        }
+
+        .score {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: #fff7fb;
+            border-radius: 15px;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d63384;
+        }
+
+        .bar-container {
+            margin-top: 10px;
+            height: 12px;
+            background: #f5dce8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: #d63384;
+            border-radius: 10px;
+            width: 0%;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #fff7fb;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error {
+            color: #be123c;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #8b7180;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+
+            .brand {
+                font-size: 34px;
+            }
+
+            .scores {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="brand">
+        🍓 Freshify
+    </div>
+
+    <div class="tagline">
+        AI-Based Multi-Fruit Freshness Classification
+    </div>
+
+
+    <div class="card">
+
+        <h2>🌷 Welcome to Freshify</h2>
+
+        <p class="welcome">
+            Upload an image of a fruit and let our neural network
+            estimate whether it appears fresh or rotten.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>📸 Upload Your Fruit Image</h2>
+
+        <div class="upload-area">
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+            >
+
+            <img
+                id="preview"
+                class="preview hidden"
+                alt="Selected fruit"
+            >
+
+        </div>
+
+        <button
+            id="predictButton"
+            onclick="predictFreshness()"
+            disabled
+        >
+            🔍 Predict Freshness
+        </button>
+
+        <div
+            id="error"
+            class="error"
+        ></div>
+
+    </div>
+
+
+    <div
+        id="resultCard"
+        class="card hidden"
+    >
+
+        <h2>🌸 Prediction Result</h2>
+
+        <div
+            id="predictionResult"
+            class="result"
+        >
+        </div>
+
+
+        <div class="scores">
+
+            <div class="score">
+
+                <div>
+                    🍏 Fresh Score
+                </div>
+
+                <div
+                    id="freshScore"
+                    class="score-value"
+                >
+                    0%
+                </div>
+
+                <div class="bar-container">
+
+                    <div
+                        id="freshBar"
+                        class="bar"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="score">
+
+                <div>
+                    🍂 Rotten Score
+                </div>
+
+                <div
+                    id="rottenScore"
+                    class="score-value"
+                >
+                    0%
+                </div>
+
+                <div class="bar-container">
+
+                    <div
+                        id="rottenBar"
+                        class="bar"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="info">
+
+            The scores represent the model's output for each class.
+            They are not calibrated probabilities or a guarantee
+            of food safety.
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        Made with 💗 using Python, TensorFlow, and Vercel
+
+        <br>
+
+        M.Tech AI & ML Project | LCA1
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const imageInput =
+        document.getElementById("imageInput");
+
+    const preview =
+        document.getElementById("preview");
+
+    const predictButton =
+        document.getElementById("predictButton");
+
+    const errorBox =
+        document.getElementById("error");
+
+    const resultCard =
+        document.getElementById("resultCard");
+
+
+    // --------------------------------------------------
+    // Image Preview
+    // --------------------------------------------------
+
+    imageInput.addEventListener(
+        "change",
+        function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+
+                preview.classList.add("hidden");
+
+                predictButton.disabled = true;
+
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+
+                preview.src = event.target.result;
+
+                preview.classList.remove("hidden");
+
+            };
+
+            reader.readAsDataURL(file);
+
+            predictButton.disabled = false;
+
+            errorBox.innerText = "";
+
+            resultCard.classList.add("hidden");
+
+        }
+    );
+
+
+    // --------------------------------------------------
+    // Prediction
+    // --------------------------------------------------
+
+    async function predictFreshness() {
+
+        const file = imageInput.files[0];
+
+        if (!file) {
+
+            errorBox.innerText =
+                "Please select an image first.";
+
+            return;
+        }
+
+
+        predictButton.disabled = true;
+
+        predictButton.innerText =
+            "⏳ Analyzing...";
+
+        errorBox.innerText = "";
+
+
+        try {
+
+            // Convert image to Base64
+
+            const reader = new FileReader();
+
+
+            reader.onload = async function () {
+
+                const base64Image =
+                    reader.result;
+
+
+                // Send image to Vercel API
+
+                const response =
+                    await fetch(
+                        "/api/predict",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                image: base64Image
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Prediction failed."
+                    );
+
+                }
+
+
+                // --------------------------------------------------
+                // Display Result
+                // --------------------------------------------------
+
+                const prediction =
+                    data.prediction;
+
+
+                const fresh =
+                    data.fresh_score;
+
+
+                const rotten =
+                    data.rotten_score;
+
+
+                const result =
+                    document.getElementById(
+                        "predictionResult"
+                    );
+
+
+                if (prediction === "Fresh") {
+
+                    result.className =
+                        "result fresh";
+
+                    result.innerHTML =
+                        "🍏 Fresh";
+
+                } else {
+
+                    result.className =
+                        "result rotten";
+
+                    result.innerHTML =
+                        "🍂 Rotten";
+
+                }
+
+
+                document.getElementById(
+                    "freshScore"
+                ).innerText =
+                    fresh + "%";
+
+
+                document.getElementById(
+                    "rottenScore"
+                ).innerText =
+                    rotten + "%";
+
+
+                document.getElementById(
+                    "freshBar"
+                ).style.width =
+                    fresh + "%";
+
+
+                document.getElementById(
+                    "rottenBar"
+                ).style.width =
+                    rotten + "%";
+
+
+                resultCard.classList.remove(
+                    "hidden"
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+
+        } catch (error) {
+
+            errorBox.innerText =
+                error.message ||
+                "Something went wrong.";
+
+        }
+
+
+        predictButton.disabled = false;
+
+        predictButton.innerText =
+            "🔍 Predict Freshness";
+
+    }
+
+</script>
+
+</body>
+
+</html>
